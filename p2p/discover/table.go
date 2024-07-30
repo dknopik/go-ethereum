@@ -512,6 +512,10 @@ func (tab *Table) handleAddNode(req addNodeOp) bool {
 	// For nodes from inbound contact, there is an additional safety measure: if the table
 	// is still initializing the node is not added.
 	if req.isInbound && !tab.isInitDone() {
+		go func() {
+			<-tab.initDone
+			tab.addInboundNode(req.node)
+		}()
 		return false
 	}
 
